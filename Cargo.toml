@@ -1,0 +1,51 @@
+[workspace]
+members = ["contracts/*"]
+resolver = "2"
+
+# [lib]
+# crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
+overflow-checks = true
+
+
+[workspace.metadata.scripts]
+optimize = "./scripts/optimizer.sh"
+
+[workspace.dependencies]
+anyhow = "1"
+cosmwasm-schema = "2"
+cosmwasm-std = { version = "2.1.4", default-features = false, features = [
+    "std",
+    "abort",
+    "staking",
+    "stargate",
+    "cosmwasm_2_0",
+] }
+cw-storage-plus = "2"
+cw2 = "2"
+cw20 = "2"
+cw20-base = "2"
+cw-controllers = "2"
+cw-utils = "2"
+hex-literal = "0.4"
+serde = { version = "1.0.103", default-features = false, features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+thiserror = { version = "1" }
+
+cw-multi-test = { version = "2", features = ["staking", "stargate"] }
+
+# Babylon
+# babylon-bindings = {git = "https://github.com/babylonchain/bindings", tag = "v0.1.0"}
+# babylon-bindings = {git = "https://github.com/babylonchain/babylon-contract/tree/main/packages/bindings" }
+# babylon-bindings = { path = "../babylon-contract/packages/bindings" }
+# babylon-bindings-test = { path = "../babylon-contract/packages/bindings-test" }
