@@ -28,12 +28,12 @@ impl DBankCodeId {
         self,
         app: &mut BabylonApp,
         bollar_vault: &str,
+        denoms: Vec<String>,
         sender: Addr,
         label: &str,
     ) -> Result<DBankContract> {
-        DBankContract::instantiate(app, self, bollar_vault, sender, label)
+        DBankContract::instantiate(app, self, bollar_vault, denoms, sender, label)
     }
-
 }
 
 impl From<DBankCodeId> for u64 {
@@ -54,10 +54,11 @@ impl DBankContract {
         app: &mut BabylonApp,
         code_id: DBankCodeId,
         bollar_vault: &str,
+        denoms: Vec<String>,
         sender: Addr,
         label: &str,
     ) -> Result<Self> {
-        let init_msg = InstantiateMsg::new(bollar_vault.to_string());
+        let init_msg = InstantiateMsg::new(bollar_vault.to_string(), denoms);
 
         app.instantiate_contract(code_id.0, sender, &init_msg, &[], label, None)
             .map(Self::from)
@@ -103,15 +104,15 @@ impl DBankContract {
     //     app.execute_contract(sender, self.addr(), &msg, funds)
     // }
 
-    pub fn metadata(&self, app: &BabylonApp) -> StdResult<MetadataResponse> {
+    pub fn query_metadata(&self, app: &BabylonApp) -> StdResult<MetadataResponse> {
         app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::GetMetadata {  })
+            .query_wasm_smart(self.addr(), &QueryMsg::GetMetadata {})
     }
 
-    // pub fn query_balance(&self, app: &BabylonApp, address: String) -> StdResult<Uint128> {
-    //     app.wrap()
-    //         .query_wasm_smart(self.addr(), &QueryMsg::Balance { address })
-    // }
+    pub fn query_denoms(&self, app: &BabylonApp) -> StdResult<Vec<String>> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::GetDenoms {})
+    }
 
     // pub fn allowance(
     //     &self,

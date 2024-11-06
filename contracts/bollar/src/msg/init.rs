@@ -14,7 +14,12 @@ pub struct InstantiateMsg {
 }
 
 impl InstantiateMsg {
-    pub fn new(name: impl Into<String>, symbol: impl Into<String>, decimals: u8, amount: Uint128) -> Self {
+    pub fn new(
+        name: impl Into<String>,
+        symbol: impl Into<String>,
+        decimals: u8,
+        amount: Uint128,
+    ) -> Self {
         Self {
             name: name.into(),
             symbol: symbol.into(),

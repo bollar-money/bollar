@@ -3,7 +3,10 @@ use babylon_bindings::{BabylonMsg, BabylonQuery};
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, Uint128};
 use cw20::{Cw20Coin, MinterResponse};
-use cw20_base::{msg::{InstantiateMarketingInfo, InstantiateMsg as Cw20InstantiateMsgstate}, state::{MinterData, TokenInfo}};
+use cw20_base::{
+    msg::{InstantiateMarketingInfo, InstantiateMsg as Cw20InstantiateMsgstate},
+    state::{MinterData, TokenInfo},
+};
 
 use crate::error::ContractError;
 use crate::msg::InstantiateMsg;
@@ -60,7 +63,7 @@ pub fn instantiate(
             description: Some(description.to_string()),
             marketing: None,
             logo: None,
-        })
+        }),
     };
 
     cw20_base::contract::instantiate(deps, env.clone(), info.clone(), msg)?;
@@ -70,6 +73,5 @@ pub fn instantiate(
         .add_attribute("symbol", symbol)
         .add_attribute("created_at", env.block.time.to_string())
         .add_attribute("creator", info.sender)
-        .add_attribute("created_at", created_at.to_string())
-    )
+        .add_attribute("created_at", created_at.to_string()))
 }

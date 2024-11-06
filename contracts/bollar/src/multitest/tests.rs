@@ -25,7 +25,15 @@ fn bollar_should_works() {
     let label = "bollarvault";
 
     let contract = code_id
-        .instantiate(&mut app, name, symbol, decimals, amount,alice.clone(), label)
+        .instantiate(
+            &mut app,
+            name,
+            symbol,
+            decimals,
+            amount,
+            alice.clone(),
+            label,
+        )
         .unwrap();
 
     let info_resp = contract.token_info(&app).unwrap();
@@ -90,6 +98,4 @@ fn bollar_should_works() {
         .unwrap();
 
     assert_eq!(contract_resp.u128(), 1_000_000_000);
-
 }
-

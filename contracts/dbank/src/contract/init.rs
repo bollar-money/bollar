@@ -4,9 +4,9 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
 use crate::models::Metadata;
+use crate::msg::InstantiateMsg;
 use crate::repositories;
 use crate::{error::ContractError, models::DBankStatus};
-use crate::msg::InstantiateMsg;
 
 use super::{CONTRACT_NAME, CONTRACT_VERSION};
 
@@ -25,8 +25,12 @@ pub fn instantiate(
         created_at: env.block.time,
         status: DBankStatus::Activing,
     };
-    
+
     repositories::metadata::save_to_item(deps.storage, &metadata)?;
+
+    for denom in msg.denoms {
+        repositories::denom::save(deps.storage, denom)?;
+    }
 
     Ok(Response::new())
 }

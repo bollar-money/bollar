@@ -51,6 +51,8 @@ thiserror = { workspace = true }
 
 # babylon-bindings = { workspace = true }
 babylon-bindings      = { path = "../../../babylon-contract/packages/bindings" }
+
+# comment this for cargo wasm, uncomment this for test
 babylon-bindings-test      = { path = "../../../babylon-contract/packages/bindings-test" }
 
 anyhow = { workspace = true, optional = true }

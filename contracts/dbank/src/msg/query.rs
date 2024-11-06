@@ -1,21 +1,27 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_json_binary, StdError, Uint128};
 
-use crate::{models::{IntentInfo, Metadata}, QueryResponse, StdResult};
+use crate::{
+    models::{IntentInfo, Metadata},
+    QueryResponse, StdResult,
+};
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     /// List all intent contract info
     #[returns(AllIntentResponse)]
-    AllIntnet { },
+    AllIntnet {},
 
     /// List intent list of a address
     #[returns(IntentsOfResponse)]
     IntentsOf { address: String },
 
     #[returns(MetadataResponse)]
-    GetMetadata { },
+    GetMetadata {},
+
+    #[returns(DenomsResponse)]
+    GetDenoms {},
 }
 
 #[cw_serde]
@@ -26,6 +32,19 @@ pub struct AllIntentResponse {
 #[cw_serde]
 pub struct IntentsOfResponse {
     pub intents: Vec<IntentInfo>,
+}
+
+#[cw_serde]
+pub struct DenomsResponse {
+    pub denoms: Vec<String>,
+}
+
+impl TryFrom<DenomsResponse> for QueryResponse {
+    type Error = StdError;
+
+    fn try_from(resp: DenomsResponse) -> StdResult<Self> {
+        to_json_binary(&resp)
+    }
 }
 
 #[cw_serde]
