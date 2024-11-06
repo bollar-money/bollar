@@ -32,10 +32,11 @@ impl BollarCodeId {
         name: &str,
         symbol: &str,
         decimals: u8,
+        amount: Uint128,
         sender: Addr,
         label: &str,
     ) -> Result<BollarContract> {
-        BollarContract::instantiate(app, self, name, symbol, decimals, sender, label)
+        BollarContract::instantiate(app, self, name, symbol, decimals, amount, sender, label)
     }
 }
 
@@ -59,10 +60,11 @@ impl BollarContract {
         name: &str,
         symbol: &str,
         decimals: u8,
+        amount: Uint128,
         sender: Addr,
         label: &str,
     ) -> Result<Self> {
-        let init_msg = InstantiateMsg::new(name, symbol, decimals);
+        let init_msg = InstantiateMsg::new(name, symbol, decimals, amount);
 
         app.instantiate_contract(code_id.0, sender, &init_msg, &[], label, None)
             .map(Self::from)

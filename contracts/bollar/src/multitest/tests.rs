@@ -14,6 +14,8 @@ fn normal_should_works() {
     let name = "Bollar";
     let symbol = "BOLLAR";
     let decimals = 9;
+    let amount = Uint128::zero();
+
     let alice = app
         .api()
         .addr_make("bbn1mc7wvxw0xnze3nngg05uav50fx6tew6glfplvx");
@@ -23,7 +25,7 @@ fn normal_should_works() {
     let label = "bollarvault";
 
     let contract = code_id
-        .instantiate(&mut app, name, symbol, decimals, alice.clone(), label)
+        .instantiate(&mut app, name, symbol, decimals, amount,alice.clone(), label)
         .unwrap();
 
     let info_resp = contract.token_info(&app).unwrap();
@@ -88,17 +90,9 @@ fn normal_should_works() {
         .unwrap();
 
     assert_eq!(contract_resp.u128(), 1_000_000_000);
-    // send to contract
-    // contract.send(&mut app, alice.clone(), contract.addr().to_string(), Uint128::new(2_000_000_000), &[]).unwrap();
 
-    // let alice_resp = contract.query_balance(&app, alice.clone().to_string()).unwrap();
-    // let contract_resp = contract.query_balance(&app, contract.addr().to_string()).unwrap();
-
-    // assert_eq!(alice_resp.u128(), 5_000_000_000);
-    // assert_eq!(contract_resp.u128(), 2_000_000_000);
 }
 
-#[test]
-pub fn allowance_should_works() {}
+
 
 // }
