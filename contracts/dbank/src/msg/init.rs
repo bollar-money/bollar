@@ -2,20 +2,13 @@ use cosmwasm_schema::cw_serde;
 
 #[cw_serde]
 pub struct InstantiateMsg {
-    /// name of the token, should be `Bollar`
-    pub name: String,
-    /// symbol/ticker of the token
-    pub symbol: String,
-
-    pub decimals: u8,
+    pub bollar_vault: String,
 }
 
 impl InstantiateMsg {
-    pub fn new(name: impl Into<String>, symbol: impl Into<String>, decimals: u8) -> Self {
+    pub fn new(bollar_vault: String) -> Self {
         Self {
-            name: name.into(),
-            symbol: symbol.into(),
-            decimals,
+            bollar_vault
         }
     }
 }

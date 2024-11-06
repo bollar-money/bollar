@@ -12,7 +12,7 @@ use crate::{
 };
 
 #[cfg(test)]
-mod tests;
+pub mod tests;
 
 #[derive(Clone, Debug, Copy)]
 pub struct BollarCodeId(u64);

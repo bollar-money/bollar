@@ -1,57 +1,48 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_json_binary, StdError, Uint128};
-use cw20::{AllowanceResponse, BalanceResponse, TokenInfoResponse};
 
-use crate::{models::Metadata, QueryResponse, StdResult};
+use crate::{models::{IntentInfo, Metadata}, QueryResponse, StdResult};
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
-    #[returns(BalanceResponse)]
-    Balance { address: String },
-    /// Implements CW20. Returns metadata on the contract - name, decimals, supply, etc.
-    #[returns(TokenInfoResponse)]
-    TokenInfo {},
-    /// Implements CW20 "allowance" extension.
-    /// Returns how much spender can use from owner account, 0 if unset.
-    #[returns(AllowanceResponse)]
-    Allowance { owner: String, spender: String },
+    /// List all intent contract info
+    #[returns(AllIntentResponse)]
+    AllIntnet { },
+
+    /// List intent list of a address
+    #[returns(IntentsOfResponse)]
+    IntentsOf { address: String },
+
+    #[returns(MetadataResponse)]
+    GetMetadata { },
 }
 
 #[cw_serde]
-pub struct TotalSupplyResp {
-    pub total_supply: Uint128,
-}
-
-impl From<Uint128> for TotalSupplyResp {
-    fn from(total_supply: Uint128) -> Self {
-        Self { total_supply }
-    }
-}
-
-impl TryFrom<TotalSupplyResp> for QueryResponse {
-    type Error = StdError;
-
-    fn try_from(resp: TotalSupplyResp) -> StdResult<Self> {
-        to_json_binary(&resp)
-    }
+pub struct AllIntentResponse {
+    pub intents: Vec<IntentInfo>,
 }
 
 #[cw_serde]
-pub struct MetadataResp {
+pub struct IntentsOfResponse {
+    pub intents: Vec<IntentInfo>,
+}
+
+#[cw_serde]
+pub struct MetadataResponse {
     pub metadata: Metadata,
 }
 
-impl From<Metadata> for MetadataResp {
+impl From<Metadata> for MetadataResponse {
     fn from(metadata: Metadata) -> Self {
         Self { metadata }
     }
 }
 
-impl TryFrom<MetadataResp> for QueryResponse {
+impl TryFrom<MetadataResponse> for QueryResponse {
     type Error = StdError;
 
-    fn try_from(resp: MetadataResp) -> StdResult<Self> {
+    fn try_from(resp: MetadataResponse) -> StdResult<Self> {
         to_json_binary(&resp)
     }
 }

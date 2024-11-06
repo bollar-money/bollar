@@ -6,8 +6,8 @@ edition = "2021"
 
 exclude = [
   # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
-  "bollar.wasm",
-  "bollar-hash.txt",
+  "dbank.wasm",
+  "dbank-hash.txt",
 ]
 
 [lib]
@@ -49,6 +49,8 @@ hex-literal = "0.4"
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 
+# bollar = { path = "../bollar", features = ["library"] }
+
 # babylon-bindings = { workspace = true }
 babylon-bindings      = { path = "../../../babylon-contract/packages/bindings" }
 
@@ -60,3 +62,4 @@ anyhow = { workspace = true }
 cw-multi-test = { workspace = true }
 # babylon-bindings-test = { workspace = true, version = "0.4.0" } 
 babylon-bindings-test      = { path = "../../../babylon-contract/packages/bindings-test" }
+bollar = { path = "../bollar", features = ["library", "mt"] }

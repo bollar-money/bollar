@@ -1,104 +1,45 @@
 // #[cfg(test)]
 // mod tests {
 
-use crate::multitest::BollarCodeId;
+use crate::{models::DBankStatus, multitest::DBankCodeId};
 use babylon_bindings_test::BabylonApp;
 use cosmwasm_std::Uint128;
 
 #[test]
-fn normal_should_works() {
-    // let mut app = App::default();
-    let mut app = BabylonApp::new("alice");
+fn dbank_should_works() {
+    
+    let mut app = BabylonApp::new("dbank");
 
-    let code_id = BollarCodeId::store_code(&mut app);
+    let bollar_id = bollar::multitest::BollarCodeId::store_code(&mut app);
+    
+    let dbank_id = DBankCodeId::store_code(&mut app);
     let name = "Bollar";
     let symbol = "BOLLAR";
     let decimals = 9;
+    let amount = Uint128::zero();
+
     let alice = app
         .api()
-        .addr_make("bbn1mc7wvxw0xnze3nngg05uav50fx6tew6glfplvx");
+        .addr_make("alice");
+    
     let bob = app
         .api()
-        .addr_make("bbn1egk0rj0vgeht3mnly8xzy0hu5a79dmsgc74mqt");
+        .addr_make("bob");
+
     let label = "bollarvault";
 
-    let contract = code_id
-        .instantiate(&mut app, name, symbol, decimals, alice.clone(), label)
+    let bollar_contract = bollar_id
+        .instantiate(&mut app, name, symbol, decimals, amount,alice.clone(), label)
         .unwrap();
 
-    let info_resp = contract.token_info(&app).unwrap();
-    assert_eq!(info_resp.name, name);
-    assert_eq!(info_resp.total_supply.u128(), 0);
-    assert_eq!(info_resp.decimals, 9);
+    let dbank_contract = dbank_id
+        .instantiate(&mut app, bollar_contract.addr().to_string().as_str(), alice.clone(), label).unwrap();
 
-    let amount = Uint128::new(10_000_000_000);
+    let metadata_resp = dbank_contract.metadata(&app).unwrap().metadata;
 
-    // mint
-    contract
-        .mint(
-            &mut app,
-            alice.clone(),
-            alice.clone().to_string(),
-            amount,
-            &[],
-        )
-        .unwrap();
+    assert_eq!(metadata_resp.bollar_vault, bollar_contract.addr());
+    assert_eq!(metadata_resp.creator, alice);
+    assert_eq!(metadata_resp.status, DBankStatus::Activing);
 
-    // query balance
-    let balance_resp = contract
-        .query_balance(&app, alice.clone().to_string())
-        .unwrap();
-
-    assert_eq!(balance_resp.u128(), amount.u128());
-
-    // transfer to bob
-    contract
-        .transfer(
-            &mut app,
-            alice.clone(),
-            bob.to_string(),
-            Uint128::new(3_000_000_000),
-            &[],
-        )
-        .unwrap();
-
-    let alice_resp = contract
-        .query_balance(&app, alice.clone().to_string())
-        .unwrap();
-    let bob_resp = contract
-        .query_balance(&app, bob.clone().to_string())
-        .unwrap();
-
-    assert_eq!(alice_resp.u128(), 7_000_000_000);
-    assert_eq!(bob_resp.u128(), 3_000_000_000);
-
-    // transfer to contract
-    contract
-        .transfer(
-            &mut app,
-            alice.clone(),
-            contract.addr().to_string(),
-            Uint128::new(1_000_000_000),
-            &[],
-        )
-        .unwrap();
-
-    let contract_resp = contract
-        .query_balance(&app, contract.addr().to_string())
-        .unwrap();
-
-    assert_eq!(contract_resp.u128(), 1_000_000_000);
-    // send to contract
-    // contract.send(&mut app, alice.clone(), contract.addr().to_string(), Uint128::new(2_000_000_000), &[]).unwrap();
-
-    // let alice_resp = contract.query_balance(&app, alice.clone().to_string()).unwrap();
-    // let contract_resp = contract.query_balance(&app, contract.addr().to_string()).unwrap();
-
-    // assert_eq!(alice_resp.u128(), 5_000_000_000);
-    // assert_eq!(contract_resp.u128(), 2_000_000_000);
 }
 
-#[test]
-pub fn allowance_should_works() {}
-
-// }

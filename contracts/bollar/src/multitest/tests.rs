@@ -6,7 +6,7 @@ use babylon_bindings_test::BabylonApp;
 use cosmwasm_std::Uint128;
 
 #[test]
-fn normal_should_works() {
+fn bollar_should_works() {
     // let mut app = App::default();
     let mut app = BabylonApp::new("alice");
 
@@ -93,6 +93,3 @@ fn normal_should_works() {
 
 }
 
-
-
-// }

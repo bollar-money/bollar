@@ -1,12 +1,12 @@
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, Uint128};
-use cw20_base::state::{MinterData, TokenInfo};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
-use crate::error::ContractError;
+use crate::models::Metadata;
+use crate::repositories;
+use crate::{error::ContractError, models::DBankStatus};
 use crate::msg::InstantiateMsg;
-use crate::repositories::token_info;
 
 use super::{CONTRACT_NAME, CONTRACT_VERSION};
 
@@ -19,5 +19,14 @@ pub fn instantiate(
 ) -> Result<Response<BabylonMsg>, ContractError> {
     cw2::set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    todo!()
+    let metadata = Metadata {
+        bollar_vault: deps.api.addr_validate(&msg.bollar_vault)?,
+        creator: info.sender,
+        created_at: env.block.time,
+        status: DBankStatus::Activing,
+    };
+    
+    repositories::metadata::save_to_item(deps.storage, &metadata)?;
+
+    Ok(Response::new())
 }

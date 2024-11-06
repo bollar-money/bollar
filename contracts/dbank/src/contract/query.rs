@@ -1,31 +1,35 @@
+
+
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{to_json_binary, Deps, Env, StdResult};
-use cw20_base::allowances;
+use cosmwasm_std::{to_json_binary, Addr, Deps, Env, Order, StdResult};
 
 use crate::msg::QueryMsg;
-use crate::repositories::{balance, token_info};
+use crate::repositories::{intent, metadata};
 use crate::QueryResponse;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<QueryResponse> {
-    // match msg {
-    //     QueryMsg::TokenInfo {} => query_token_info(deps),
-    //     QueryMsg::Balance { address } => query_balance(deps, &address),
-    //     QueryMsg::Allowance { owner, spender } => query_allowance(deps, owner, spender),
-    // }
-    todo!()
+    match msg {
+        QueryMsg::GetMetadata {} => get_metadata(deps),
+        QueryMsg::AllIntnet {  } => all_intents(deps),
+        QueryMsg::IntentsOf { address} => intents_of(deps, address),
+    }
 }
 
-pub fn query_token_info(deps: Deps) -> StdResult<QueryResponse> {
-    token_info::get_from_item(deps.storage).and_then(|info| to_json_binary(&info))
+fn get_metadata(deps: Deps) -> StdResult<QueryResponse> {
+    metadata::get_from_item(deps.storage).and_then(|resp| to_json_binary(&resp))
 }
 
-pub fn query_balance(deps: Deps, address: &str) -> StdResult<QueryResponse> {
-    let address = deps.api.addr_validate(address)?;
-    balance::query_balance(deps.storage, &address).and_then(|b| to_json_binary(&b))
+fn all_intents(deps: Deps) -> StdResult<QueryResponse> {
+    let intents: StdResult<Vec<_>> = intent::all_intents(deps.storage);
+     
+    intents.and_then(|i| to_json_binary(&i))        
 }
 
-pub fn query_allowance(deps: Deps, owner: String, spender: String) -> StdResult<QueryResponse> {
-    allowances::query_allowance(deps, owner, spender).and_then(|ar| to_json_binary(&ar))
+fn intents_of(deps: Deps, address: String) -> StdResult<QueryResponse> {
+    let address = deps.api.addr_validate(&address)?;
+    let intents: StdResult<Vec<_>> = intent::intents_of(deps.storage, &address);
+     
+    intents.and_then(|i| to_json_binary(&i))      
 }
