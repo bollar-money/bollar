@@ -17,6 +17,10 @@ pub enum QueryMsg {
     #[returns(IntentsOfResponse)]
     IntentsOf { address: String },
 
+    /// List intent list of owner address in INTENT_LEVEAGES
+    #[returns(IntentsOfResponse)]
+    IntentsByOwner { address: String },
+
     #[returns(MetadataResponse)]
     GetMetadata {},
 

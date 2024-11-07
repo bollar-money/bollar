@@ -1,22 +1,22 @@
-use std::collections::HashSet;
+
 
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    attr, to_json_binary, Addr, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, QueryResponse,
-    Response, StdError, StdResult, SubMsg, Uint128, WasmMsg,
+    attr, to_json_binary, DepsMut, Env, MessageInfo, 
+    Response,  SubMsg,  WasmMsg,
 };
 
 use crate::{
     models::{IntentInfo, IntentInstantiateMsg},
     msg::ExecuteMsg,
-    repositories::{denom, metadata},
+    repositories::{denom, intent_leverage, metadata},
     ContractError,
 };
 
-use super::{addr_validate, ContractResult, CREATE_INTENT_REPLY_ID};
+use super::ContractResult;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
@@ -40,24 +40,25 @@ fn stake(
     // Get BBN funds
     let coins = info.funds;
 
-    if coins.iter().map(|coin| coin.amount.u128()).sum::<u128>() == 0 {
+    if coins.len() != 1 {
+        return Err(ContractError::UnsupportedMultiDenom {});
+    }
+
+    let coin = coins[0].clone();
+
+    if coin.amount.u128() == 0 {
         return Err(ContractError::InvalidZeroAmount {});
     }
 
+    let denom = coin.denom;
     let sender = info.sender;
     let denoms = denom::all_denoms(deps.storage)?;
 
-    let denom_set: HashSet<_> = denoms.iter().cloned().collect();
-
-    for coin in &coins {
-        if !denom_set.contains(&coin.denom) {
-            return Err(ContractError::InvalidDenomStaking {
-                denom: coin.denom.clone(),
-            });
-        }
+    if !denoms.contains(&denom) {
+        return Err(ContractError::InvalidDenomStaking { denom })
     }
 
-    // TODO: Create Intent contract
+    // Create Intent contract
     let metadata = metadata::get_from_item(deps.storage)?.metadata;
     let intent_code_id = metadata.intent_code_id;
 
@@ -83,7 +84,8 @@ fn stake(
         created_at: env.block.time,
     };
 
-    // intent::
+    intent_leverage::save(deps.storage, &sender, leverage, denom, intent_info)?;
+
     // TODO: handle reply
     let msg = SubMsg::reply_never(msg);
 
