@@ -25,6 +25,7 @@ pub fn execute(
 ) -> Result<Response<BabylonMsg>, ContractError> {
     match msg {
 
+        ExecuteMsg::SetExchangeRate { denom, rate } => set_exchange_rate(deps, env, info, denom, rate),
         ExecuteMsg::Exchange { } => exchange(deps, env, info),
 
         // For Cw20
@@ -62,6 +63,27 @@ pub fn execute(
     }
 }
 
+/// FIXME: simulate oracle
+pub fn set_exchange_rate(
+    deps: DepsMut<BabylonQuery>,
+    env: Env,
+    info: MessageInfo,
+    denom: String,
+    rate: Uint128,
+) -> ContractResult<Response<BabylonMsg>> {
+
+    exchanger::save(deps.storage, denom.to_string(), rate)?;
+
+    let resp = Response::new()
+        .add_attribute("action", "set_exchange_rate")
+        .add_attribute("denom", denom)
+        .add_attribute("amount", rate)
+        .add_attribute("operator", info.sender)
+        .add_attribute("action_time", env.block.time.to_string());
+
+    Ok(resp)
+}
+
 pub fn exchange(
     deps: DepsMut<BabylonQuery>,
     env: Env,
@@ -80,6 +102,8 @@ pub fn exchange(
             None => return Err(ContractError::UnsupportDenom { denom: c.denom.clone() }),
         }    
     }
+
+    println!("want to exchange bollar: {amount_of_bollar} ");
 
     let amount = Uint128::new(amount_of_bollar);
     check_zero(amount)?; 

@@ -7,6 +7,8 @@ pub enum ExecuteMsg {
 
     Exchange { },
 
+    SetExchangeRate { denom: String, rate: Uint128 },
+
     /// For Cw20
     /// Only with the "mintable" extension. If authorized, creates amount new tokens
     /// and adds to the recipient balance.

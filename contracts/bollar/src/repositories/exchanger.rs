@@ -18,3 +18,11 @@ pub fn all(
 ) -> StdResult<HashMap<String, Uint128>> {
     EXCHANGE_RATES.range(store, None, None, cosmwasm_std::Order::Ascending).collect()
 }
+
+pub fn save(
+    store: &mut dyn Storage,
+    denom: String,
+    rate: Uint128,
+) -> StdResult<()> {
+    EXCHANGE_RATES.save(store, denom, &rate)
+}

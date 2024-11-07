@@ -50,7 +50,7 @@ fn bollar_should_works() {
     assert_eq!(info_resp.total_supply.u128(), 0);
     assert_eq!(info_resp.decimals, 9);
 
-    let amount = Uint128::new(10_000_000_000);
+    let amount = Uint128::new(10_000_000_000 * 1_000_000_000);
 
     // mint
     contract
@@ -71,16 +71,23 @@ fn bollar_should_works() {
     assert_eq!(balance_resp.u128(), 0);
 
     // exchange bollar 
-    let exchange_amount_bollar = 200 * 1_000_000_000;
-    let exchange_funds = coin(2_000 * 1_000_000_000, ubbn_denom);
+    let expected_bollar = 1000 * 1_000_000_000;
+    let exchange_funds = coin(100 * 1_000_000_000, ubbn_denom);
     
+    contract.set_exchange_rate(&mut app, alice.clone(), ubbn_denom.to_string(), Uint128::new(10), &[]).unwrap();
     contract.exchange(&mut app, alice.clone(), &[exchange_funds]).unwrap();
 
     let balance_resp = contract
         .query_balance(&app, alice.clone().to_string())
         .unwrap();
 
-    assert_eq!(balance_resp.u128(), exchange_amount_bollar);
+    assert_eq!(balance_resp.u128(), expected_bollar);
+
+    let contract_balance_resp = contract
+        .query_balance(&app, contract.addr().to_string())
+        .unwrap();
+
+    assert_eq!(contract_balance_resp.u128(), (10_000_000_000 - 1000) * 1_000_000_000);
 
     // transfer to bob
     contract
@@ -100,7 +107,7 @@ fn bollar_should_works() {
         .query_balance(&app, bob.clone().to_string())
         .unwrap();
 
-    assert_eq!(alice_resp.u128(), 7_000_000_000);
+    assert_eq!(alice_resp.u128(), 997_000_000_000);
     assert_eq!(bob_resp.u128(), 3_000_000_000);
 
     // transfer to contract
@@ -118,5 +125,5 @@ fn bollar_should_works() {
         .query_balance(&app, contract.addr().to_string())
         .unwrap();
 
-    assert_eq!(contract_resp.u128(), 1_000_000_000);
+    assert_eq!(contract_resp.u128(), (10_000_000_000 - 1000 + 1) * 1_000_000_000);
 }

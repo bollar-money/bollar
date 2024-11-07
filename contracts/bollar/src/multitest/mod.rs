@@ -94,6 +94,18 @@ impl BollarContract {
         app.execute_contract(sender, self.addr(), &msg, funds)
     }
 
+    pub fn set_exchange_rate(
+        &self,
+        app: &mut BabylonApp,
+        sender: Addr,
+        denom: String,
+        rate: Uint128,
+        funds: &[Coin],
+    ) -> Result<AppResponse> {
+        let msg = ExecuteMsg::SetExchangeRate { denom, rate };
+        app.execute_contract(sender, self.addr(), &msg, funds)
+    }
+
     pub fn exchange(
         &self,
         app: &mut BabylonApp,
