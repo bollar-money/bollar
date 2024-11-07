@@ -1,3 +1,4 @@
+
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
@@ -10,7 +11,7 @@ use cw20_base::allowances::deduct_allowance;
 use cw20_base::state::{MinterData, TokenInfo, ALLOWANCES, ALLOWANCES_SPENDER};
 
 use crate::msg::ExecuteMsg;
-use crate::repositories::balance;
+use crate::repositories::{balance, exchanger};
 use crate::{error::ContractError, repositories::token_info};
 
 use super::{addr_validate, ContractResult};
@@ -23,7 +24,11 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response<BabylonMsg>, ContractError> {
     match msg {
-        ExecuteMsg::Mint { recipient, amount } => mint(deps, env, info, recipient, amount),
+
+        ExecuteMsg::Exchange { } => exchange(deps, env, info),
+
+        // For Cw20
+        ExecuteMsg::Mint { amount } => mint(deps, env, info,  amount),
         ExecuteMsg::Transfer { recipient, amount } => transfer(deps, env, info, recipient, amount),
         ExecuteMsg::TransferFrom {
             owner,
@@ -57,11 +62,46 @@ pub fn execute(
     }
 }
 
+pub fn exchange(
+    deps: DepsMut<BabylonQuery>,
+    env: Env,
+    info: MessageInfo,
+) -> ContractResult<Response<BabylonMsg>> {
+
+    let coins = info.funds;
+
+    let exchange_rates = exchanger::all(deps.storage)?;
+
+    let mut amount_of_bollar: u128 = 0;
+
+    for c in &coins {
+        match exchange_rates.get(&c.denom) {
+            Some(rate) => amount_of_bollar = amount_of_bollar + (rate.u128() * c.amount.u128()), 
+            None => return Err(ContractError::UnsupportDenom { denom: c.denom.clone() }),
+        }    
+    }
+
+    let amount = Uint128::new(amount_of_bollar);
+    check_zero(amount)?; 
+
+    let recipient = info.sender;
+
+    // Subtract the sender amount and add the recipient amount
+    balance::sub_sender_and_add_recipient(deps.storage, &env.contract.address, &recipient, amount)?;
+
+    let resp = Response::new()
+        .add_attribute("action", "exchange")
+        .add_attribute("to", &recipient)
+        .add_attribute("amount", amount)
+        .add_attribute("action_time", env.block.time.to_string());
+
+    Ok(resp)
+}
+
 pub fn mint(
     deps: DepsMut<BabylonQuery>,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
-    recipient: String,
     amount: Uint128,
 ) -> Result<Response<BabylonMsg>, ContractError> {
     check_zero(amount)?;
@@ -77,14 +117,14 @@ pub fn mint(
     token_info::save_to_item(deps.storage, &ti)?;
 
     // add amount to recipient balance
-    let rcpt_addr = deps.api.addr_validate(&recipient)?;
+    // let rcpt_addr = deps.api.addr_validate(&recipient)?;
 
-    balance::add_balance(deps.storage, &rcpt_addr, amount)?;
+    balance::add_balance(deps.storage, &env.contract.address, amount)?;
 
     let res = Response::new()
         .add_attribute("action", "mint")
-        .add_attribute("to", recipient)
         .add_attribute("amount", amount);
+
     Ok(res)
 }
 

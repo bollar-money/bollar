@@ -74,11 +74,11 @@ impl BollarContract {
         &self,
         app: &mut BabylonApp,
         sender: Addr,
-        recipient: String,
+        _recipient: String,
         amount: Uint128,
         funds: &[Coin],
     ) -> Result<AppResponse> {
-        let msg = ExecuteMsg::Mint { recipient, amount };
+        let msg = ExecuteMsg::Mint { amount };
         app.execute_contract(sender, self.addr(), &msg, funds)
     }
 
@@ -91,6 +91,18 @@ impl BollarContract {
         funds: &[Coin],
     ) -> Result<AppResponse> {
         let msg = ExecuteMsg::Transfer { recipient, amount };
+        app.execute_contract(sender, self.addr(), &msg, funds)
+    }
+
+    pub fn exchange(
+        &self,
+        app: &mut BabylonApp,
+        sender: Addr,
+        // recipient: String,
+        // amount_of_bollar: Uint128,
+        funds: &[Coin],
+    ) -> Result<AppResponse> {
+        let msg = ExecuteMsg::Exchange { };
         app.execute_contract(sender, self.addr(), &msg, funds)
     }
 

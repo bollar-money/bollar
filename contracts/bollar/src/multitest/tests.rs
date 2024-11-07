@@ -3,12 +3,23 @@
 
 use crate::multitest::BollarCodeId;
 use babylon_bindings_test::BabylonApp;
-use cosmwasm_std::Uint128;
+use cosmwasm_std::{coin, coins, Uint128};
 
 #[test]
 fn bollar_should_works() {
-    // let mut app = App::default();
-    let mut app = BabylonApp::new("alice");
+
+    let ubbn_denom = "ubbn";
+
+    let mut app = BabylonApp::new("bollar");
+
+    let alice = app.api().addr_make("alice");
+
+    app.init_modules(|router, _api, storage| {
+        router
+            .bank
+            .init_balance(storage, &alice, coins(300 * 1_000_000_000, ubbn_denom))
+            .unwrap();
+    });
 
     let code_id = BollarCodeId::store_code(&mut app);
     let name = "Bollar";
@@ -16,12 +27,10 @@ fn bollar_should_works() {
     let decimals = 9;
     let amount = Uint128::zero();
 
-    let alice = app
-        .api()
-        .addr_make("bbn1mc7wvxw0xnze3nngg05uav50fx6tew6glfplvx");
     let bob = app
         .api()
-        .addr_make("bbn1egk0rj0vgeht3mnly8xzy0hu5a79dmsgc74mqt");
+        .addr_make("bob");
+    
     let label = "bollarvault";
 
     let contract = code_id
@@ -59,7 +68,19 @@ fn bollar_should_works() {
         .query_balance(&app, alice.clone().to_string())
         .unwrap();
 
-    assert_eq!(balance_resp.u128(), amount.u128());
+    assert_eq!(balance_resp.u128(), 0);
+
+    // exchange bollar 
+    let exchange_amount_bollar = 200 * 1_000_000_000;
+    let exchange_funds = coin(2_000 * 1_000_000_000, ubbn_denom);
+    
+    contract.exchange(&mut app, alice.clone(), &[exchange_funds]).unwrap();
+
+    let balance_resp = contract
+        .query_balance(&app, alice.clone().to_string())
+        .unwrap();
+
+    assert_eq!(balance_resp.u128(), exchange_amount_bollar);
 
     // transfer to bob
     contract

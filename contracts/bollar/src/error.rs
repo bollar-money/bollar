@@ -28,6 +28,9 @@ pub enum ContractError {
     #[error("Invalid zero amount")]
     InvalidZeroAmount {},
 
+    #[error("UnsupportDenom")]
+    UnsupportDenom { denom: String },
+
     #[error("To Do Error")]
     ToDo {},
 }

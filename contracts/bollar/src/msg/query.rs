@@ -2,11 +2,19 @@ use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_json_binary, StdError, Uint128};
 use cw20::{AllowanceResponse, BalanceResponse, TokenInfoResponse};
 
-use crate::{models::Metadata, QueryResponse, StdResult};
+use crate::{QueryResponse, StdResult};
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
+
+    #[returns(TotalSupplyCirculatingResponse)]
+    TotalSupplyCirculating { },
+
+    // #[returns(GetExchangeRateResponse)]
+    // GetExchangeRate { denom: String },
+
+    // For Cw20
     #[returns(BalanceResponse)]
     Balance { address: String },
     /// Implements CW20. Returns metadata on the contract - name, decimals, supply, etc.
@@ -17,8 +25,7 @@ pub enum QueryMsg {
     #[returns(AllowanceResponse)]
     Allowance { owner: String, spender: String },
 
-    #[returns(TotalSupplyCirculatingResponse)]
-    TotalSupplyCirculating
+    
 }
 
 #[cw_serde]
@@ -36,20 +43,14 @@ impl TryFrom<TotalSupplyCirculatingResponse> for QueryResponse {
 }
 
 #[cw_serde]
-pub struct MetadataResp {
-    pub metadata: Metadata,
+pub struct GetExchangeRateResponse {
+    pub rate: Uint128,
 }
 
-impl From<Metadata> for MetadataResp {
-    fn from(metadata: Metadata) -> Self {
-        Self { metadata }
-    }
-}
-
-impl TryFrom<MetadataResp> for QueryResponse {
+impl TryFrom<GetExchangeRateResponse> for QueryResponse {
     type Error = StdError;
 
-    fn try_from(resp: MetadataResp) -> StdResult<Self> {
+    fn try_from(resp: GetExchangeRateResponse) -> StdResult<Self> {
         to_json_binary(&resp)
     }
 }
