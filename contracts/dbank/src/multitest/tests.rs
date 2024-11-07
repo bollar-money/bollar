@@ -100,7 +100,8 @@ fn dbank_should_works() {
     assert!(alice_balance_resp.amount.u128() == 298 * 1_000_000_000);
 
     // check intent info
-    let info_resp = dbank_contract.query_intents(&app, alice.to_string()).unwrap();
+    let info_resp = dbank_contract
+        .query_intents(&app, alice.to_string())
+        .unwrap();
     assert_eq!(info_resp.len(), 1);
-
 }

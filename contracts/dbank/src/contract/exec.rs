@@ -1,13 +1,8 @@
-
-
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{
-    attr, to_json_binary, DepsMut, Env, MessageInfo, 
-    Response,  SubMsg,  WasmMsg,
-};
+use cosmwasm_std::{attr, to_json_binary, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg};
 
 use crate::{
     models::{IntentInfo, IntentInstantiateMsg},
@@ -55,7 +50,7 @@ fn stake(
     let denoms = denom::all_denoms(deps.storage)?;
 
     if !denoms.contains(&denom) {
-        return Err(ContractError::InvalidDenomStaking { denom })
+        return Err(ContractError::InvalidDenomStaking { denom });
     }
 
     // Create Intent contract

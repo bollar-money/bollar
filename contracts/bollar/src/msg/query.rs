@@ -16,23 +16,21 @@ pub enum QueryMsg {
     /// Returns how much spender can use from owner account, 0 if unset.
     #[returns(AllowanceResponse)]
     Allowance { owner: String, spender: String },
+
+    #[returns(TotalSupplyCirculatingResponse)]
+    TotalSupplyCirculating
 }
 
 #[cw_serde]
-pub struct TotalSupplyResp {
+pub struct TotalSupplyCirculatingResponse {
     pub total_supply: Uint128,
+    pub circulating_shares: Uint128,
 }
 
-impl From<Uint128> for TotalSupplyResp {
-    fn from(total_supply: Uint128) -> Self {
-        Self { total_supply }
-    }
-}
-
-impl TryFrom<TotalSupplyResp> for QueryResponse {
+impl TryFrom<TotalSupplyCirculatingResponse> for QueryResponse {
     type Error = StdError;
 
-    fn try_from(resp: TotalSupplyResp) -> StdResult<Self> {
+    fn try_from(resp: TotalSupplyCirculatingResponse) -> StdResult<Self> {
         to_json_binary(&resp)
     }
 }

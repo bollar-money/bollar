@@ -14,9 +14,6 @@ use crate::repositories::balance;
 use crate::{error::ContractError, repositories::token_info};
 
 use super::{addr_validate, ContractResult};
-// use crate::repositories::{metadata, total_supply};
-// use crate::state::{BALANCE_OF_ADDRESS, BEACONS, TOKEN_INFO, TOTAL_SUPPLY};
-// use crate::types::Metadata;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
@@ -33,8 +30,8 @@ pub fn execute(
             recipient,
             amount,
         } => transfer_from(deps, env, info, owner, recipient, amount),
-        ExecuteMsg::Burn { amount } => burn(deps, env, info, amount),
         ExecuteMsg::BurnFrom { owner, amount } => burn_from(deps, env, info, owner, amount),
+        ExecuteMsg::Burn { amount } => burn(deps, env, info, amount),
         ExecuteMsg::DecreaseAllowance {
             spender,
             amount,

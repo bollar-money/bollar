@@ -4,7 +4,10 @@ use cosmwasm_std::{Addr, Coin};
 use cw_multi_test::{AppResponse, ContractWrapper, Executor};
 
 use crate::{
-    contract::{execute, instantiate, query}, models::IntentInfo, msg::{ExecuteMsg, InstantiateMsg, MetadataResponse, QueryMsg}, StdResult
+    contract::{execute, instantiate, query},
+    models::IntentInfo,
+    msg::{ExecuteMsg, InstantiateMsg, MetadataResponse, QueryMsg},
+    StdResult,
 };
 
 #[cfg(test)]
@@ -98,7 +101,6 @@ impl DBankContract {
         app.wrap()
             .query_wasm_smart(self.addr(), &QueryMsg::IntentsByOwner { address })
     }
-
 
     pub fn query_balance(
         &self,
