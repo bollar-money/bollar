@@ -1,6 +1,6 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{to_json_binary, Addr, Deps, Env, Order, StdResult};
+use cosmwasm_std::{to_json_binary, Deps, Env, StdResult};
 
 use crate::msg::QueryMsg;
 use crate::repositories::{denom, intent, metadata};

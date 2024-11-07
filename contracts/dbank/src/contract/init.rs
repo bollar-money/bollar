@@ -21,6 +21,7 @@ pub fn instantiate(
 
     let metadata = Metadata {
         bollar_vault: deps.api.addr_validate(&msg.bollar_vault)?,
+        intent_code_id: msg.intent_code_id,
         creator: info.sender,
         created_at: env.block.time,
         status: DBankStatus::Activing,

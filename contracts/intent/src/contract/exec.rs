@@ -1,15 +1,11 @@
-use std::collections::HashSet;
-
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{
-    attr, Addr, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, QueryResponse, Response, StdError, StdResult, Uint128, WasmMsg
-};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
 use crate::{msg::ExecuteMsg, ContractError};
 
-use super::{addr_validate, ContractResult};
+use super::ContractResult;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
@@ -36,27 +32,11 @@ fn stake(
         return Err(ContractError::InvalidZeroAmount {});
     }
 
-    // let denoms = denom::all_denoms(deps.storage)?;
-
-    // let denom_set: HashSet<_> = denoms.iter().cloned().collect();
-
-    // for coin in &coins {
-    //     if !denom_set.contains(&coin.denom) {
-    //         return Err(ContractError::InvalidDenomStaking { denom: coin.denom.clone() });
-    //     }
-    // }
-
-    // transfer funds to dbank,
-    // let message = BankMsg::Send {
-    //     to_address: env.contract.address.to_string(),
-    //     amount: coins,
-    // };
-
-    // TODO: Create Intent contract
+    // save metadata TODO:
 
     let resp = Response::new()
-            // .add_message(message)
-            .add_attribute("action", "stake");
+        // .add_message(message)
+        .add_attribute("action", "stake");
 
     Ok(resp)
 }

@@ -54,6 +54,8 @@ thiserror = { workspace = true }
 # babylon-bindings = { workspace = true }
 babylon-bindings      = { path = "../../../babylon-contract/packages/bindings" }
 
+intent = { path = "../intent", features = ["library", "mt"] }
+
 anyhow = { workspace = true, optional = true }
 cw-multi-test = { workspace = true, optional = true }
 
@@ -63,3 +65,4 @@ cw-multi-test = { workspace = true }
 # babylon-bindings-test = { workspace = true, version = "0.4.0" } 
 babylon-bindings-test      = { path = "../../../babylon-contract/packages/bindings-test" }
 bollar = { path = "../bollar", features = ["library", "mt"] }
+intent = { path = "../intent", features = ["library", "mt"] }

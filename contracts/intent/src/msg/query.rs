@@ -1,17 +1,13 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{to_json_binary, StdError, Uint128};
 
-use crate::{
-    models::{IntentInfo, Metadata},
-    QueryResponse, StdResult,
-};
+use crate::{models::Metadata, QueryResponse, StdResult};
 
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     #[returns(MetadataResponse)]
     GetMetadata {},
-
     // #[returns(DenomsResponse)]
     // GetDenoms {},
 }

@@ -1,12 +1,10 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Timestamp, Uint128};
+use cosmwasm_std::{Addr, Timestamp};
 
 #[cw_serde]
 pub struct Metadata {
-    // pub staked_token_denom: String,
-    // pub staked_token_amount: Uint128,
-    // pub leverage: u8,
     pub bollar_vault: Addr,
+    pub intent_code_id: u64,
     pub creator: Addr,
     pub created_at: Timestamp,
     pub status: DBankStatus,

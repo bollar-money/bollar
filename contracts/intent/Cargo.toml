@@ -47,6 +47,7 @@ thiserror = { workspace = true }
 
 # babylon-bindings = { workspace = true }
 babylon-bindings      = { path = "../../../babylon-contract/packages/bindings" }
+babylon-bindings-test      = { path = "../../../babylon-contract/packages/bindings-test" }
 
 anyhow = { workspace = true, optional = true }
 cw-multi-test = { workspace = true, optional = true }

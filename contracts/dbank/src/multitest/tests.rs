@@ -3,28 +3,27 @@
 
 use crate::{models::DBankStatus, multitest::DBankCodeId};
 use babylon_bindings_test::BabylonApp;
-use cosmwasm_std::{coin, coins, Coin, Uint128};
+use cosmwasm_std::{coin, coins, Uint128};
 
 #[test]
 fn dbank_should_works() {
     let ubbn_denom = "ubbn";
-    
 
     let mut app = BabylonApp::new("dbank");
 
     let alice = app.api().addr_make("alice");
 
-    let bob = app.api().addr_make("bob");
+    // let bob = app.api().addr_make("bob");
 
     app.init_modules(|router, _api, storage| {
         router
-                .bank
-                .init_balance(storage, &alice, coins(300 * 1_000_000_000, ubbn_denom))
-                .unwrap();
-
-     });
+            .bank
+            .init_balance(storage, &alice, coins(300 * 1_000_000_000, ubbn_denom))
+            .unwrap();
+    });
 
     let bollar_id = bollar::multitest::BollarCodeId::store_code(&mut app);
+    let intent_id = intent::multitest::IntentCodeId::store_code(&mut app);
 
     let dbank_id = DBankCodeId::store_code(&mut app);
     let name = "Bollar";
@@ -53,6 +52,7 @@ fn dbank_should_works() {
             &mut app,
             bollar_contract.addr().to_string().as_str(),
             denoms,
+            intent_id.into(),
             alice.clone(),
             label,
         )
@@ -68,23 +68,34 @@ fn dbank_should_works() {
 
     assert_eq!(denoms_resp.len(), 1);
 
-    let balance_resp = dbank_contract.query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string()).unwrap();
+    let balance_resp = dbank_contract
+        .query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string())
+        .unwrap();
     assert_eq!(balance_resp.amount.u128(), 0);
 
     // Stake ubbn
     let coin = coin(2_000_000_000, "ubbn");
-    dbank_contract.stake(
-        &mut app,
-        alice.clone(),
-        &[coin.clone()]
-    ).unwrap();
+    let intent_name = "intent_alice";
+    let leverage = 2;
+    dbank_contract
+        .stake(
+            &mut app,
+            alice.clone(),
+            &[coin.clone()],
+            leverage,
+            intent_name.to_string(),
+        )
+        .unwrap();
 
-    let contract_balance_resp = dbank_contract.query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string()).unwrap();
+    let contract_balance_resp = dbank_contract
+        .query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string())
+        .unwrap();
 
-    assert!(contract_balance_resp.amount.u128() == coin.amount.u128());
+    assert_eq!(contract_balance_resp.amount.u128(), 0);
 
-    let alice_balance_resp = dbank_contract.query_balance(&app, alice.to_string(), "ubbn".to_string()).unwrap();
+    let alice_balance_resp = dbank_contract
+        .query_balance(&app, alice.to_string(), "ubbn".to_string())
+        .unwrap();
 
     assert!(alice_balance_resp.amount.u128() == 298 * 1_000_000_000);
-
 }

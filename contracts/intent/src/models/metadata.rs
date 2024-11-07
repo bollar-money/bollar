@@ -1,5 +1,5 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Coin, Timestamp, Uint128};
+use cosmwasm_std::{Addr, Coin, Timestamp};
 
 /// Intent contract metadata should keep the creator, staked assets, status,
 #[cw_serde]

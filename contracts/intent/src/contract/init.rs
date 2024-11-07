@@ -1,7 +1,7 @@
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{coin, DepsMut, Env, MessageInfo, Response, Uint128};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
 
 use crate::models::Metadata;
 use crate::msg::InstantiateMsg;
