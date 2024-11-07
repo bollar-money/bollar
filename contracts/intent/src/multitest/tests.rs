@@ -1,7 +1,7 @@
 // #[cfg(test)]
 // mod tests {
 
-use crate::{models::DBankStatus, multitest::DBankCodeId};
+use crate::{models::IntentStatus, multitest::DBankCodeId};
 use babylon_bindings_test::BabylonApp;
 use cosmwasm_std::{coin, coins, Coin, Uint128};
 
@@ -62,7 +62,7 @@ fn dbank_should_works() {
 
     assert_eq!(metadata_resp.bollar_vault, bollar_contract.addr());
     assert_eq!(metadata_resp.creator, alice);
-    assert_eq!(metadata_resp.status, DBankStatus::Activing);
+    assert_eq!(metadata_resp.status, IntentStatus::Activing);
 
     let denoms_resp = dbank_contract.query_denoms(&app).unwrap();
 
