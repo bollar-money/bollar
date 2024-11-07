@@ -7,7 +7,7 @@ use cosmwasm_std::{
     attr, Addr, BankMsg, CosmosMsg, DepsMut, Env, MessageInfo, QueryResponse, Response, StdError, StdResult, Uint128, WasmMsg
 };
 
-use crate::{msg::ExecuteMsg, repositories::denom, ContractError};
+use crate::{msg::ExecuteMsg, ContractError};
 
 use super::{addr_validate, ContractResult};
 
@@ -36,15 +36,15 @@ fn stake(
         return Err(ContractError::InvalidZeroAmount {});
     }
 
-    let denoms = denom::all_denoms(deps.storage)?;
+    // let denoms = denom::all_denoms(deps.storage)?;
 
-    let denom_set: HashSet<_> = denoms.iter().cloned().collect();
+    // let denom_set: HashSet<_> = denoms.iter().cloned().collect();
 
-    for coin in &coins {
-        if !denom_set.contains(&coin.denom) {
-            return Err(ContractError::InvalidDenomStaking { denom: coin.denom.clone() });
-        }
-    }
+    // for coin in &coins {
+    //     if !denom_set.contains(&coin.denom) {
+    //         return Err(ContractError::InvalidDenomStaking { denom: coin.denom.clone() });
+    //     }
+    // }
 
     // transfer funds to dbank,
     // let message = BankMsg::Send {

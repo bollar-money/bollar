@@ -12,32 +12,32 @@ pub enum QueryMsg {
     #[returns(MetadataResponse)]
     GetMetadata {},
 
-    #[returns(DenomsResponse)]
-    GetDenoms {},
+    // #[returns(DenomsResponse)]
+    // GetDenoms {},
 }
 
-#[cw_serde]
-pub struct AllIntentResponse {
-    pub intents: Vec<IntentInfo>,
-}
+// #[cw_serde]
+// pub struct AllIntentResponse {
+//     pub intents: Vec<IntentInfo>,
+// }
 
-#[cw_serde]
-pub struct IntentsOfResponse {
-    pub intents: Vec<IntentInfo>,
-}
+// #[cw_serde]
+// pub struct IntentsOfResponse {
+//     pub intents: Vec<IntentInfo>,
+// }
 
-#[cw_serde]
-pub struct DenomsResponse {
-    pub denoms: Vec<String>,
-}
+// #[cw_serde]
+// pub struct DenomsResponse {
+//     pub denoms: Vec<String>,
+// }
 
-impl TryFrom<DenomsResponse> for QueryResponse {
-    type Error = StdError;
+// impl TryFrom<DenomsResponse> for QueryResponse {
+//     type Error = StdError;
 
-    fn try_from(resp: DenomsResponse) -> StdResult<Self> {
-        to_json_binary(&resp)
-    }
-}
+//     fn try_from(resp: DenomsResponse) -> StdResult<Self> {
+//         to_json_binary(&resp)
+//     }
+// }
 
 #[cw_serde]
 pub struct MetadataResponse {

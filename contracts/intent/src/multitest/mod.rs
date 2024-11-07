@@ -13,38 +13,39 @@ use crate::{
 mod tests;
 
 #[derive(Clone, Debug, Copy)]
-pub struct DBankCodeId(u64);
+pub struct IntentCodeId(u64);
 
-impl DBankCodeId {
+impl IntentCodeId {
     pub fn store_code(app: &mut BabylonApp) -> Self {
         let contract = ContractWrapper::new(execute, instantiate, query);
 
         let code_id = app.store_code(Box::new(contract));
 
-        DBankCodeId(code_id)
+        IntentCodeId(code_id)
     }
 
     pub fn instantiate(
         self,
         app: &mut BabylonApp,
         bollar_vault: &str,
-        denoms: Vec<String>,
+        leverage: u8,
         sender: Addr,
+        funds: Coin,
         label: &str,
-    ) -> Result<DBankContract> {
-        DBankContract::instantiate(app, self, bollar_vault, denoms, sender, label)
+    ) -> Result<IntentContract> {
+        IntentContract::instantiate(app, self, bollar_vault, leverage, sender, funds, label)
     }
 }
 
-impl From<DBankCodeId> for u64 {
-    fn from(code_id: DBankCodeId) -> Self {
+impl From<IntentCodeId> for u64 {
+    fn from(code_id: IntentCodeId) -> Self {
         code_id.0
     }
 }
 
-pub struct DBankContract(Addr);
+pub struct IntentContract(Addr);
 
-impl DBankContract {
+impl IntentContract {
     pub fn addr(&self) -> Addr {
         self.0.clone()
     }
@@ -52,15 +53,16 @@ impl DBankContract {
     #[track_caller]
     pub fn instantiate(
         app: &mut BabylonApp,
-        code_id: DBankCodeId,
+        code_id: IntentCodeId,
         bollar_vault: &str,
-        denoms: Vec<String>,
+        leverage: u8,
         sender: Addr,
+        funds: Coin,
         label: &str,
     ) -> Result<Self> {
-        let init_msg = InstantiateMsg::new(bollar_vault.to_string(), denoms);
+        let init_msg = InstantiateMsg::new(leverage, bollar_vault.to_string());
 
-        app.instantiate_contract(code_id.0, sender, &init_msg, &[], label, None)
+        app.instantiate_contract(code_id.0, sender, &init_msg, &[funds], label, None)
             .map(Self::from)
     }
 
@@ -80,10 +82,10 @@ impl DBankContract {
             .query_wasm_smart(self.addr(), &QueryMsg::GetMetadata {})
     }
 
-    pub fn query_denoms(&self, app: &BabylonApp) -> StdResult<Vec<String>> {
-        app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::GetDenoms {})
-    }
+    // pub fn query_denoms(&self, app: &BabylonApp) -> StdResult<Vec<String>> {
+    //     app.wrap()
+    //         .query_wasm_smart(self.addr(), &QueryMsg::GetDenoms {})
+    // }
 
     pub fn query_balance(&self, app: &BabylonApp, address: String, denom: String) -> StdResult<Coin> {
         app.wrap()
@@ -92,7 +94,7 @@ impl DBankContract {
 
 }
 
-impl From<Addr> for DBankContract {
+impl From<Addr> for IntentContract {
     fn from(value: Addr) -> Self {
         Self(value)
     }

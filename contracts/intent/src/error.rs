@@ -12,6 +12,9 @@ pub enum ContractError {
     #[error("Invalid denom for Staking")]
     InvalidDenomStaking { denom: String },
 
+    #[error("Don't support multi denom")]
+    UnsupportedMultiDenom {  },
+
     #[error("Minting cannot exceed the cap")]
     CannotExceedCap {},
 

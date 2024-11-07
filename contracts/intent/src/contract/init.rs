@@ -1,7 +1,7 @@
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{coin, DepsMut, Env, MessageInfo, Response, Uint128};
 
 use crate::models::Metadata;
 use crate::msg::InstantiateMsg;
@@ -19,18 +19,27 @@ pub fn instantiate(
 ) -> Result<Response<BabylonMsg>, ContractError> {
     cw2::set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    // let metadata = Metadata {
-    //     bollar_vault: deps.api.addr_validate(&msg.bollar_vault)?,
-    //     creator: info.sender,
-    //     created_at: env.block.time,
-    //     status: IntentStatus::Activing,
-    // };
+    let coins = info.funds;
 
-    // repositories::metadata::save_to_item(deps.storage, &metadata)?;
+    if coins.len() != 1 {
+        return Err(ContractError::UnsupportedMultiDenom {});
+    }
 
-    // for denom in msg.denoms {
-    //     repositories::denom::save(deps.storage, denom)?;
-    // }
+    let staked_coin = coins[0].clone();
+
+    let metadata = Metadata {
+        staked_coin,
+        leverage: msg.leverage,
+        bollar_vault: deps.api.addr_validate(&msg.bollar_vault)?,
+        dbank: info.sender.clone(),
+        interest_to_pay: 0,
+        fee: 0,
+        creator: info.sender,
+        created_at: env.block.time,
+        status: IntentStatus::Activing,
+    };
+
+    repositories::metadata::save_to_item(deps.storage, &metadata)?;
 
     Ok(Response::new())
 }
