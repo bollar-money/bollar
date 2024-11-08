@@ -91,6 +91,9 @@ fn dbank_should_works() {
 
     println!("Created intent contract: {intent_contract:?}");
 
+    let intent_info = dbank_contract.query_intent(&app, alice.to_string(), intent_contract.to_string()).unwrap();
+    assert_eq!(intent_info.unwrap().leverage, 2);
+
     let contract_balance_resp = dbank_contract
         .query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string())
         .unwrap();

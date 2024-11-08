@@ -1,7 +1,7 @@
 use anyhow::Result;
 use babylon_bindings_test::BabylonApp;
 use cosmwasm_std::{from_json, Addr, Coin};
-use cw_multi_test::{AppResponse, ContractWrapper, Executor};
+use cw_multi_test::{ContractWrapper, Executor};
 
 use crate::{
     contract::{execute, instantiate, query, reply, InstantiationData},
@@ -105,9 +105,14 @@ impl DBankContract {
             .query_wasm_smart(self.addr(), &QueryMsg::GetDenoms {})
     }
 
-    pub fn query_intents(&self, app: &BabylonApp, address: String) -> StdResult<Vec<IntentInfo>> {
+    pub fn query_intents(&self, app: &BabylonApp, owner: String) -> StdResult<Vec<IntentInfo>> {
         app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::IntentsByOwner { address })
+            .query_wasm_smart(self.addr(), &QueryMsg::IntentsOfOwner { owner })
+    }
+
+    pub fn query_intent(&self, app: &BabylonApp, owner: String, contract: String) -> StdResult<Option<IntentInfo>> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::IntentOfOwnerContract { owner, contract })
     }
 
     pub fn query_balance(

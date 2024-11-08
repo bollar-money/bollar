@@ -15,11 +15,11 @@ pub enum QueryMsg {
 
     /// List intent list of a address
     #[returns(IntentsOfResponse)]
-    IntentsOf { address: String },
+    IntentsOfOwner { owner: String },
 
     /// List intent list of owner address in INTENT_LEVEAGES
-    #[returns(IntentsOfResponse)]
-    IntentsByOwner { address: String },
+    #[returns(IntentOfResponse)]
+    IntentOfOwnerContract { owner: String, contract: String },
 
     #[returns(MetadataResponse)]
     GetMetadata {},
@@ -37,6 +37,12 @@ pub struct AllIntentResponse {
 pub struct IntentsOfResponse {
     pub intents: Vec<IntentInfo>,
 }
+
+#[cw_serde]
+pub struct IntentOfResponse {
+    pub intent: IntentInfo,
+}
+
 
 #[cw_serde]
 pub struct DenomsResponse {
