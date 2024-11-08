@@ -114,7 +114,7 @@ impl BollarContract {
         // amount_of_bollar: Uint128,
         funds: &[Coin],
     ) -> Result<AppResponse> {
-        let msg = ExecuteMsg::Exchange { };
+        let msg = ExecuteMsg::Exchange {};
         app.execute_contract(sender, self.addr(), &msg, funds)
     }
 
@@ -149,9 +149,12 @@ impl BollarContract {
             .query_wasm_smart(self.addr(), &QueryMsg::GetExchangeRate { denom })
     }
 
-    pub fn query_circulating_shares(&self, app: &BabylonApp) -> StdResult<TotalSupplyCirculatingResponse> {
+    pub fn query_circulating_shares(
+        &self,
+        app: &BabylonApp,
+    ) -> StdResult<TotalSupplyCirculatingResponse> {
         app.wrap()
-            .query_wasm_smart(self.addr(), &QueryMsg::TotalSupplyCirculating {  })
+            .query_wasm_smart(self.addr(), &QueryMsg::TotalSupplyCirculating {})
     }
 
     pub fn allowance(

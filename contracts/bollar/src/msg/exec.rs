@@ -4,19 +4,28 @@ use cw20::Expiration;
 
 #[cw_serde]
 pub enum ExecuteMsg {
+    Exchange {},
 
-    Exchange { },
-
-    SetExchangeRate { denom: String, rate: Uint128 },
+    SetExchangeRate {
+        denom: String,
+        rate: Uint128,
+    },
 
     /// For Cw20
     /// Only with the "mintable" extension. If authorized, creates amount new tokens
     /// and adds to the recipient balance.
-    Mint { amount: Uint128 },
+    Mint {
+        amount: Uint128,
+    },
     /// Implements CW20. Transfer is a base message to move tokens to another account without triggering actions
-    Transfer { recipient: String, amount: Uint128 },
+    Transfer {
+        recipient: String,
+        amount: Uint128,
+    },
     /// Implements CW20. Burn is a base message to destroy tokens forever
-    Burn { amount: Uint128 },
+    Burn {
+        amount: Uint128,
+    },
     /// Implements CW20.  Send is a base message to transfer tokens to a contract and trigger an action
     /// on the receiving contract.
     Send {
@@ -56,7 +65,10 @@ pub enum ExecuteMsg {
         msg: QueryResponse,
     },
     /// Implements CW20 "approval" extension. Destroys tokens forever
-    BurnFrom { owner: String, amount: Uint128 },
+    BurnFrom {
+        owner: String,
+        amount: Uint128,
+    },
     // /// This accepts a properly-encoded ReceiveMsg from a cw20 contract
     // Receive(Cw20ReceiveMsg),
 }

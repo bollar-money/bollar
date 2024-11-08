@@ -2,16 +2,18 @@ use babylon_bindings::{BabylonMsg, BabylonQuery};
 
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{attr, to_json_binary, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg};
+use cosmwasm_std::{
+    attr, to_json_binary, Addr, DepsMut, Env, MessageInfo, Response, SubMsg, WasmMsg,
+};
 
 use crate::{
     models::{IntentInfo, IntentInstantiateMsg},
     msg::ExecuteMsg,
-    repositories::{denom, intent_leverage, metadata},
+    repositories::{self, denom, intent_leverage, metadata},
     ContractError,
 };
 
-use super::ContractResult;
+use super::{ContractResult, CREATE_INTENT_REPLY_ID};
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
@@ -73,16 +75,18 @@ fn stake(
 
     let intent_info = IntentInfo {
         name: name.clone(),
+        intent_contract: Addr::unchecked(""),
         bollar_vault: metadata.bollar_vault,
         leverage,
         creator: sender.clone(),
         created_at: env.block.time,
     };
 
-    intent_leverage::save(deps.storage, &sender, leverage, denom, intent_info)?;
+    repositories::intent::save_pending_intent(deps.storage, &intent_info)?;
+    intent_leverage::save(deps.storage, &sender, leverage, denom, &intent_info)?;
 
-    // TODO: handle reply
-    let msg = SubMsg::reply_never(msg);
+    // handle reply
+    let msg = SubMsg::reply_on_success(msg, CREATE_INTENT_REPLY_ID);
 
     let attrs = vec![
         attr("action", "create_intent"),

@@ -77,7 +77,7 @@ fn dbank_should_works() {
     let coin = coin(2_000_000_000, "ubbn");
     let intent_name = "intent_alice";
     let leverage = 2;
-    dbank_contract
+    let intent_contract = dbank_contract
         .stake(
             &mut app,
             alice.clone(),
@@ -85,7 +85,11 @@ fn dbank_should_works() {
             leverage,
             intent_name.to_string(),
         )
-        .unwrap();
+        .unwrap()
+        .unwrap()
+        .addr;
+
+    println!("Created intent contract: {intent_contract:?}");
 
     let contract_balance_resp = dbank_contract
         .query_balance(&app, dbank_contract.addr().to_string(), "ubbn".to_string())

@@ -38,8 +38,8 @@ pub fn query_total_supply_circulating_(deps: Deps) -> StdResult<QueryResponse> {
     let resp = TotalSupplyCirculatingResponse {
         total_supply,
         circulating_shares,
-    }; 
-    
+    };
+
     to_json_binary(&resp)
 }
 

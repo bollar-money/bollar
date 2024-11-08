@@ -7,7 +7,6 @@ use cosmwasm_std::{coin, coins, Uint128};
 
 #[test]
 fn bollar_should_works() {
-
     let ubbn_denom = "ubbn";
 
     let mut app = BabylonApp::new("bollar");
@@ -27,10 +26,8 @@ fn bollar_should_works() {
     let decimals = 9;
     let amount = Uint128::new(10_000_000_000 * 1_000_000_000);
 
-    let bob = app
-        .api()
-        .addr_make("bob");
-    
+    let bob = app.api().addr_make("bob");
+
     let label = "bollarvault";
 
     let contract = code_id
@@ -72,16 +69,28 @@ fn bollar_should_works() {
 
     assert_eq!(balance_resp.u128(), 0);
 
-    // exchange bollar 
+    // exchange bollar
     let expected_bollar = 1000 * 1_000_000_000;
     let exchange_funds = coin(100 * 1_000_000_000, ubbn_denom);
-    
-    contract.set_exchange_rate(&mut app, alice.clone(), ubbn_denom.to_string(), Uint128::new(10), &[]).unwrap();
 
-    let rate_resp = contract.query_exchange_rate(&app, ubbn_denom.to_string()).unwrap();
+    contract
+        .set_exchange_rate(
+            &mut app,
+            alice.clone(),
+            ubbn_denom.to_string(),
+            Uint128::new(10),
+            &[],
+        )
+        .unwrap();
+
+    let rate_resp = contract
+        .query_exchange_rate(&app, ubbn_denom.to_string())
+        .unwrap();
     assert_eq!(rate_resp.u128(), 10);
 
-    contract.exchange(&mut app, alice.clone(), &[exchange_funds]).unwrap();
+    contract
+        .exchange(&mut app, alice.clone(), &[exchange_funds])
+        .unwrap();
 
     let circulating_resp = contract.query_circulating_shares(&app).unwrap();
     assert_eq!(circulating_resp.total_supply.u128(), amount.u128());
@@ -97,7 +106,10 @@ fn bollar_should_works() {
         .query_balance(&app, contract.addr().to_string())
         .unwrap();
 
-    assert_eq!(contract_balance_resp.u128(), (10_000_000_000 - 1000) * 1_000_000_000);
+    assert_eq!(
+        contract_balance_resp.u128(),
+        (10_000_000_000 - 1000) * 1_000_000_000
+    );
 
     // transfer to bob
     contract
@@ -135,5 +147,8 @@ fn bollar_should_works() {
         .query_balance(&app, contract.addr().to_string())
         .unwrap();
 
-    assert_eq!(contract_resp.u128(), (10_000_000_000 - 1000 + 1) * 1_000_000_000);
+    assert_eq!(
+        contract_resp.u128(),
+        (10_000_000_000 - 1000 + 1) * 1_000_000_000
+    );
 }

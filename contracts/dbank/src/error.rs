@@ -1,4 +1,5 @@
 use cosmwasm_std::StdError;
+use cw_utils::ParseReplyError;
 use thiserror::Error;
 
 #[derive(Error, Debug, PartialEq)]
@@ -26,6 +27,15 @@ pub enum ContractError {
 
     #[error("Invalid zero amount")]
     InvalidZeroAmount {},
+
+    #[error("Inknown reply id {id}")]
+    UnRecognizedReplyId { id: u64 },
+
+    #[error("Data missing when reply")]
+    ReplyDataMissing {},
+
+    #[error("{0}")]
+    ParseErr(#[from] ParseReplyError),
 
     #[error("To Do Error")]
     ToDo {},

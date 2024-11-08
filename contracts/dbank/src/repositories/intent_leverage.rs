@@ -22,7 +22,7 @@ pub fn save(
     owner: &Addr,
     leverage: u8,
     denom: String,
-    info: IntentInfo,
+    info: &IntentInfo,
 ) -> StdResult<()> {
-    INTENT_LEVERAGES.save(store, (owner, leverage, denom), &info)
+    INTENT_LEVERAGES.save(store, (owner, leverage, denom), info)
 }

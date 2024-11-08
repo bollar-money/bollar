@@ -4,6 +4,7 @@ use cosmwasm_std::{Addr, Timestamp};
 #[cw_serde]
 pub struct IntentInfo {
     pub name: String,
+    pub intent_contract: Addr,
     pub bollar_vault: Addr,
     pub leverage: u8,
     pub creator: Addr,

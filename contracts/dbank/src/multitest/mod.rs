@@ -1,10 +1,10 @@
 use anyhow::Result;
 use babylon_bindings_test::BabylonApp;
-use cosmwasm_std::{Addr, Coin};
+use cosmwasm_std::{from_json, Addr, Coin};
 use cw_multi_test::{AppResponse, ContractWrapper, Executor};
 
 use crate::{
-    contract::{execute, instantiate, query},
+    contract::{execute, instantiate, query, reply, InstantiationData},
     models::IntentInfo,
     msg::{ExecuteMsg, InstantiateMsg, MetadataResponse, QueryMsg},
     StdResult,
@@ -18,7 +18,7 @@ pub struct DBankCodeId(u64);
 
 impl DBankCodeId {
     pub fn store_code(app: &mut BabylonApp) -> Self {
-        let contract = ContractWrapper::new(execute, instantiate, query);
+        let contract = ContractWrapper::new(execute, instantiate, query).with_reply(reply);
 
         let code_id = app.store_code(Box::new(contract));
 
@@ -82,9 +82,17 @@ impl DBankContract {
         funds: &[Coin],
         leverage: u8,
         name: String,
-    ) -> Result<AppResponse> {
+    ) -> Result<Option<InstantiationData>> {
         let msg = ExecuteMsg::Stake { leverage, name };
-        app.execute_contract(sender, self.addr(), &msg, funds)
+        let resp = app
+            .execute_contract(sender, self.addr(), &msg, funds)
+            .unwrap();
+
+        let data = from_json(&resp.data.unwrap()).unwrap();
+
+        println!("Created intent contract: {data:?}");
+
+        Ok(data)
     }
 
     pub fn query_metadata(&self, app: &BabylonApp) -> StdResult<MetadataResponse> {

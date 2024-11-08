@@ -7,9 +7,8 @@ use crate::{QueryResponse, StdResult};
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
-
     #[returns(TotalSupplyCirculatingResponse)]
-    TotalSupplyCirculating { },
+    TotalSupplyCirculating {},
 
     #[returns(GetExchangeRateResponse)]
     GetExchangeRate { denom: String },
@@ -24,8 +23,6 @@ pub enum QueryMsg {
     /// Returns how much spender can use from owner account, 0 if unset.
     #[returns(AllowanceResponse)]
     Allowance { owner: String, spender: String },
-
-    
 }
 
 #[cw_serde]

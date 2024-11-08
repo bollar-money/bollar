@@ -11,13 +11,10 @@ pub fn save(
     item.save(storage, circulating_share)
 }
 
-pub fn increase(
-    storage: &mut dyn Storage, 
-    to_add: Uint128,
-) -> StdResult<Uint128> {
+pub fn increase(storage: &mut dyn Storage, to_add: Uint128) -> StdResult<Uint128> {
     CIRCULATING_SHARES.update(storage, |mut shares| -> StdResult<_> {
         shares = shares + to_add;
-        Ok(shares )
+        Ok(shares)
     })
 }
 
@@ -26,5 +23,7 @@ pub fn save_to_item(storage: &mut dyn Storage, circulating_share: &Uint128) -> S
 }
 
 pub fn get_from_item(storage: &dyn Storage) -> StdResult<Uint128> {
-    CIRCULATING_SHARES.may_load(storage).map(|c| c.unwrap_or_default())
+    CIRCULATING_SHARES
+        .may_load(storage)
+        .map(|c| c.unwrap_or_default())
 }

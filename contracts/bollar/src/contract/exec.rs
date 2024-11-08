@@ -1,4 +1,3 @@
-
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
@@ -24,12 +23,13 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response<BabylonMsg>, ContractError> {
     match msg {
-
-        ExecuteMsg::SetExchangeRate { denom, rate } => set_exchange_rate(deps, env, info, denom, rate),
-        ExecuteMsg::Exchange { } => exchange(deps, env, info),
+        ExecuteMsg::SetExchangeRate { denom, rate } => {
+            set_exchange_rate(deps, env, info, denom, rate)
+        }
+        ExecuteMsg::Exchange {} => exchange(deps, env, info),
 
         // For Cw20
-        ExecuteMsg::Mint { amount } => mint(deps, env, info,  amount),
+        ExecuteMsg::Mint { amount } => mint(deps, env, info, amount),
         ExecuteMsg::Transfer { recipient, amount } => transfer(deps, env, info, recipient, amount),
         ExecuteMsg::TransferFrom {
             owner,
@@ -71,7 +71,6 @@ pub fn set_exchange_rate(
     denom: String,
     rate: Uint128,
 ) -> ContractResult<Response<BabylonMsg>> {
-
     exchanger::save(deps.storage, denom.to_string(), rate)?;
 
     let resp = Response::new()
@@ -89,7 +88,6 @@ pub fn exchange(
     env: Env,
     info: MessageInfo,
 ) -> ContractResult<Response<BabylonMsg>> {
-
     let coins = info.funds;
 
     let exchange_rates = exchanger::all(deps.storage)?;
@@ -98,15 +96,19 @@ pub fn exchange(
 
     for c in &coins {
         match exchange_rates.get(&c.denom) {
-            Some(rate) => amount_of_bollar = amount_of_bollar + (rate.u128() * c.amount.u128()), 
-            None => return Err(ContractError::UnsupportDenom { denom: c.denom.clone() }),
-        }    
+            Some(rate) => amount_of_bollar = amount_of_bollar + (rate.u128() * c.amount.u128()),
+            None => {
+                return Err(ContractError::UnsupportDenom {
+                    denom: c.denom.clone(),
+                })
+            }
+        }
     }
 
     println!("want to exchange bollar: {amount_of_bollar} ");
 
     let amount = Uint128::new(amount_of_bollar);
-    check_zero(amount)?; 
+    check_zero(amount)?;
 
     let recipient = info.sender;
 
