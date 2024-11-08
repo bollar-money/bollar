@@ -144,6 +144,11 @@ impl BollarContract {
             .query_wasm_smart(self.addr(), &QueryMsg::Balance { address })
     }
 
+    pub fn query_exchange_rate(&self, app: &BabylonApp, denom: String) -> StdResult<Uint128> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::GetExchangeRate { denom })
+    }
+
     pub fn allowance(
         &self,
         app: &BabylonApp,

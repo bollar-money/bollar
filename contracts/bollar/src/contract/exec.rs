@@ -11,7 +11,7 @@ use cw20_base::allowances::deduct_allowance;
 use cw20_base::state::{MinterData, TokenInfo, ALLOWANCES, ALLOWANCES_SPENDER};
 
 use crate::msg::ExecuteMsg;
-use crate::repositories::{balance, exchanger};
+use crate::repositories::{balance, circulating, exchanger};
 use crate::{error::ContractError, repositories::token_info};
 
 use super::{addr_validate, ContractResult};
@@ -112,6 +112,9 @@ pub fn exchange(
 
     // Subtract the sender amount and add the recipient amount
     balance::sub_sender_and_add_recipient(deps.storage, &env.contract.address, &recipient, amount)?;
+
+    // Save circulating shares
+    circulating::increase(deps.storage, amount)?;
 
     let resp = Response::new()
         .add_attribute("action", "exchange")

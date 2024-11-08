@@ -11,8 +11,8 @@ pub enum QueryMsg {
     #[returns(TotalSupplyCirculatingResponse)]
     TotalSupplyCirculating { },
 
-    // #[returns(GetExchangeRateResponse)]
-    // GetExchangeRate { denom: String },
+    #[returns(GetExchangeRateResponse)]
+    GetExchangeRate { denom: String },
 
     // For Cw20
     #[returns(BalanceResponse)]

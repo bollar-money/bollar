@@ -11,6 +11,16 @@ pub fn save(
     item.save(storage, circulating_share)
 }
 
+pub fn increase(
+    storage: &mut dyn Storage, 
+    to_add: Uint128,
+) -> StdResult<Uint128> {
+    CIRCULATING_SHARES.update(storage, |mut shares| -> StdResult<_> {
+        shares = shares + to_add;
+        Ok(shares )
+    })
+}
+
 pub fn save_to_item(storage: &mut dyn Storage, circulating_share: &Uint128) -> StdResult<()> {
     save(CIRCULATING_SHARES, storage, circulating_share)
 }

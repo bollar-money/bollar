@@ -75,6 +75,10 @@ fn bollar_should_works() {
     let exchange_funds = coin(100 * 1_000_000_000, ubbn_denom);
     
     contract.set_exchange_rate(&mut app, alice.clone(), ubbn_denom.to_string(), Uint128::new(10), &[]).unwrap();
+
+    let rate_resp = contract.query_exchange_rate(&app, ubbn_denom.to_string()).unwrap();
+    assert_eq!(rate_resp.u128(), 10);
+
     contract.exchange(&mut app, alice.clone(), &[exchange_funds]).unwrap();
 
     let balance_resp = contract
