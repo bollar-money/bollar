@@ -25,7 +25,7 @@ fn bollar_should_works() {
     let name = "Bollar";
     let symbol = "BOLLAR";
     let decimals = 9;
-    let amount = Uint128::zero();
+    let amount = Uint128::new(10_000_000_000 * 1_000_000_000);
 
     let bob = app
         .api()
@@ -47,21 +47,23 @@ fn bollar_should_works() {
 
     let info_resp = contract.token_info(&app).unwrap();
     assert_eq!(info_resp.name, name);
-    assert_eq!(info_resp.total_supply.u128(), 0);
+    assert_eq!(info_resp.total_supply.u128(), amount.u128());
     assert_eq!(info_resp.decimals, 9);
 
-    let amount = Uint128::new(10_000_000_000 * 1_000_000_000);
+    let circulating_resp = contract.query_circulating_shares(&app).unwrap();
+    assert_eq!(circulating_resp.total_supply.u128(), amount.u128());
+    assert_eq!(circulating_resp.circulating_shares.u128(), 0);
 
-    // mint
-    contract
-        .mint(
-            &mut app,
-            alice.clone(),
-            alice.clone().to_string(),
-            amount,
-            &[],
-        )
-        .unwrap();
+    // // mint
+    // contract
+    //     .mint(
+    //         &mut app,
+    //         alice.clone(),
+    //         alice.clone().to_string(),
+    //         amount,
+    //         &[],
+    //     )
+    //     .unwrap();
 
     // query balance
     let balance_resp = contract
@@ -80,6 +82,10 @@ fn bollar_should_works() {
     assert_eq!(rate_resp.u128(), 10);
 
     contract.exchange(&mut app, alice.clone(), &[exchange_funds]).unwrap();
+
+    let circulating_resp = contract.query_circulating_shares(&app).unwrap();
+    assert_eq!(circulating_resp.total_supply.u128(), amount.u128());
+    assert_eq!(circulating_resp.circulating_shares.u128(), expected_bollar);
 
     let balance_resp = contract
         .query_balance(&app, alice.clone().to_string())

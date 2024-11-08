@@ -4,13 +4,7 @@ use cw20_base::state::BALANCES;
 use crate::StdResult;
 
 pub fn query_balance(store: &dyn Storage, address: &Addr) -> StdResult<Uint128> {
-    let balance = BALANCES.load(store, address);
-
-    if balance.is_err() {
-        return Ok(Uint128::zero());
-    }
-
-    balance
+    BALANCES.may_load(store, address).map(|b| b.unwrap_or_default())
 }
 
 // pub fn update_balance(store: &mut dyn Storage, owner: &Addr, amount: Uint128, f: fn(Uint128, Uint128) -> StdResult<Uint128>) -> StdResult<Uint128> {

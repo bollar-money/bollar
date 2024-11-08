@@ -7,7 +7,7 @@ use cw_multi_test::{AppResponse, ContractWrapper, Executor};
 
 use crate::{
     contract::{execute, instantiate, query},
-    msg::{ExecuteMsg, InstantiateMsg, QueryMsg},
+    msg::{ExecuteMsg, InstantiateMsg, QueryMsg, TotalSupplyCirculatingResponse},
     QueryResponse, StdResult,
 };
 
@@ -147,6 +147,11 @@ impl BollarContract {
     pub fn query_exchange_rate(&self, app: &BabylonApp, denom: String) -> StdResult<Uint128> {
         app.wrap()
             .query_wasm_smart(self.addr(), &QueryMsg::GetExchangeRate { denom })
+    }
+
+    pub fn query_circulating_shares(&self, app: &BabylonApp) -> StdResult<TotalSupplyCirculatingResponse> {
+        app.wrap()
+            .query_wasm_smart(self.addr(), &QueryMsg::TotalSupplyCirculating {  })
     }
 
     pub fn allowance(

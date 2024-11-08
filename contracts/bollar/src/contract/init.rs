@@ -1,11 +1,11 @@
 use babylon_bindings::{BabylonMsg, BabylonQuery};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{DepsMut, Env, MessageInfo, Response};
+use cosmwasm_std::{DepsMut, Env, MessageInfo, Response, Uint128};
 use cw20::{Cw20Coin, MinterResponse};
 use cw20_base::msg::{InstantiateMarketingInfo, InstantiateMsg as Cw20InstantiateMsgstate};
 
-use crate::error::ContractError;
+use crate::{error::ContractError, repositories::circulating};
 use crate::msg::InstantiateMsg;
 
 use super::{CONTRACT_NAME, CONTRACT_VERSION};
@@ -33,7 +33,7 @@ pub fn instantiate(
         symbol: symbol.clone(),
         decimals,
         initial_balances: vec![Cw20Coin {
-            address: sender.clone().to_string(),
+            address: env.contract.address.to_string(),
             amount,
         }],
         mint: Some(MinterResponse {
@@ -47,6 +47,8 @@ pub fn instantiate(
             logo: None,
         }),
     };
+
+    circulating::save_to_item(deps.storage, &Uint128::zero())?;
 
     cw20_base::contract::instantiate(deps, env.clone(), info.clone(), msg)?;
 
